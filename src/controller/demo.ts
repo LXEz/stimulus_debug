@@ -1,6 +1,7 @@
 import { Controller } from "./../../stimulus/core/controller";
 
 export class Demo extends Controller {
+  static targets: string[] = ["jk", "io"];
   connect(): void {
     console.log("sadhjakdhskj");
 
