@@ -67,6 +67,7 @@ export function blessDefinition(definition: Definition): Definition {
 
 //bless.ts
 export function bless<T>(constructor: Blessable<T>): Constructor<T> {
+  //返回一个shadowConstructor，该构造函数的原型是
   return shadow(constructor, getBlessedProperties(constructor))
 }
 
@@ -84,6 +85,7 @@ function getBlessedProperties<T>(constructor: Constructor<T>) {
   //会找到给定构造函数的所有原型，然后取出上面的所有blessings属性，在这里结果如上
   const blessings = readInheritableStaticArrayValues(constructor, "blessings") as Blessing<T>[]
   return blessings.reduce((blessedProperties, blessing) => {
+    //在这里用上面提到的4个函数，递归的处理constructor的Class、Target、Value、 Outlet等静态属性
     const properties = blessing(constructor)
     for (const key in properties) {
       const descriptor = blessedProperties[key] || ({} as PropertyDescriptor)
@@ -91,13 +93,19 @@ function getBlessedProperties<T>(constructor: Constructor<T>) {
     }
     return blessedProperties
   }, {} as PropertyDescriptorMap)
+
+  /**
+   * 最终返回的结果blessedProperties如下：
+   *
+   *
+   */
 }
 
 
 //inheritable_statics.ts
+//在处理 Class、target、 Outlet时使用这个函数获取原型树上的属性
 export function readInheritableStaticArrayValues<T, U = string>(constructor: Constructor<T>, propertyName: string) {
   //获取构造函数的所有原型
-
   const ancestors = getAncestorsForConstructor(constructor)
   return Array.from(
     ancestors.reduce((values, constructor) => {
@@ -107,6 +115,25 @@ export function readInheritableStaticArrayValues<T, U = string>(constructor: Con
     }, new Set() as Set<U>)
   )
 }
+
+//在处理Value时，使用下面这个函数
+export function readInheritableStaticObjectPairs<T, U>(constructor: Constructor<T>, propertyName: string) {
+  const ancestors = getAncestorsForConstructor(constructor)
+  return ancestors.reduce((pairs, constructor) => {
+    pairs.push(...(getOwnStaticObjectPairs(constructor, propertyName) as any))
+    return pairs
+  }, [] as [string, U][])
+}
+
+function getOwnStaticObjectPairs<T, U>(constructor: Constructor<T>, propertyName: string) {
+  const definition = (constructor as any)[propertyName]
+  /**
+   * 将controller上定义的value拆分成元组，[key,{define}]的形式
+   *
+   */
+  return definition ? Object.keys(definition).map((key) => [key, definition[key]] as [string, U]) : []
+}
+
 
 ```
 
