@@ -47,6 +47,13 @@ loadDefinition(definition: Definition) {
     }
 }
 
+//
+ private connectModule(module: Module) {
+    this.modulesByIdentifier.set(module.identifier, module)
+    const scopes = this.scopesByIdentifier.getValuesForKey(module.identifier)
+    scopes.forEach((scope) => module.connectContextForScope(scope))
+  }
+
 //module.ts
 constructor(application: Application, definition: Definition) {
     this.application = application
@@ -55,6 +62,8 @@ constructor(application: Application, definition: Definition) {
     this.contextsByScope = new WeakMap()
     this.connectedContexts = new Set()
   }
+
+
 
 //blessDefinition.ts
 export function blessDefinition(definition: Definition): Definition {
@@ -67,7 +76,7 @@ export function blessDefinition(definition: Definition): Definition {
 
 //bless.ts
 export function bless<T>(constructor: Blessable<T>): Constructor<T> {
-  //返回一个shadowConstructor，该构造函数的原型是
+  //返回一个shadowConstructor，该构造函数的原型是传入的controller的实例
   return shadow(constructor, getBlessedProperties(constructor))
 }
 
