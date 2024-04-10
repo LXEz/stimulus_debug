@@ -18,4 +18,12 @@ export class Demo extends Controller {
 
     this.element.innerHTML = "我是啊哈哈哈";
   }
+  clickHandle() {
+    console.log(111);
+    this.dispatch("putDataToMenu", { detail: { id: 1231 } });
+  }
+
+  getHeaderData() {
+    console.log("getHeaderData");
+  }
 }

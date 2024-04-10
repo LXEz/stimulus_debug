@@ -2,13 +2,14 @@ import { defineConfig } from "vite";
 import { resolve, dirname } from "node:path";
 import terser from "@rollup/plugin-terser";
 const STIMULUS_PATH = resolve(__dirname, "./stimulus");
+const entryFile = resolve(__dirname, "./stimulus/index.ts");
 export default defineConfig({
   // ...
   build: {
-    // lib: {
-    //   entry: resolve(STIMULUS_PATH, "./index.ts"),
-    //   name: "mylib",
-    // },
+    lib: {
+      entry: entryFile,
+      name: "mylib",
+    },
     target: "esnext",
     sourcemap: true,
     // minify: "terser",

@@ -7,7 +7,15 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div id="app" data-controller="demo"></div>
+    <div
+      id="app"
+      data-controller="demo"
+      data-action=" header:putDataToMenu@window->demo#getHeaderData     click->demo#clickHandle asd:hjk->demo#jkFn"
+      data-demo-test1-value="1213213"
+    >
+      <div data-demo-target="jk">jk</div>
+      <div data-demo-target="jk78">j456456k</div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
