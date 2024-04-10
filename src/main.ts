@@ -7,3 +7,5 @@ const application = Application.start();
 console.log(2222);
 
 application.register("demo", Demo);
+
+window.Application = application;
