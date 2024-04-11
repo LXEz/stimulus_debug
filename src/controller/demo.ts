@@ -13,11 +13,9 @@ export class Demo extends Controller {
       default: "sd2",
     },
   };
-  connect(): void {
-    console.log("sadhjakdhskj");
 
-    this.element.innerHTML = "我是啊哈哈哈";
-  }
+  static slots: string[] = ["slot1", "slot2"];
+  connect(): void {}
   clickHandle() {
     console.log(111);
     this.dispatch("putDataToMenu", { detail: { id: 1231 } });
