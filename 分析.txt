@@ -1,0 +1,51 @@
+倾向于组合
+多个类组合调用东西
+
+解构前端工作
+M、V、C
+
+
+M+V+C = 组件，关联MVC的地方，还可以基于组合的服用和组合
+
+
+允许多个C组合， stimmulus没有定义组合后是什么
+
+V组合嵌套，基于配置生成组合嵌套关系
+
+
+
+
+function b() {}
+class B {
+    member2
+
+    add() {
+        this.member2
+    }
+}
+
+class A extends B{
+
+    member1() {
+        b()
+    }
+}
+function a(b,c) {
+
+}
+
+controller
+class componentB {
+    componentA.a
+}
+class componentA {
+    a{}
+    bc{}
+    c{}
+    e
+
+    A.member1
+    B.add
+    B.member2 
+}
+
