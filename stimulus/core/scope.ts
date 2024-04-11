@@ -6,6 +6,7 @@ import { Schema } from "./schema";
 import { attributeValueContainsToken } from "./selectors";
 import { TargetSet } from "./target_set";
 import { OutletSet } from "./outlet_set";
+import { Slot } from "./slots/slot";
 
 export class Scope {
   readonly schema: Schema;
@@ -14,9 +15,10 @@ export class Scope {
   readonly guide: Guide;
   readonly outlets: OutletSet;
   readonly targets = new TargetSet(this);
-  readonly slots = new Set();
   readonly classes = new ClassMap(this);
   readonly data = new DataMap(this);
+
+  readonly slots = new Set<Slot>();
 
   constructor(
     schema: Schema,

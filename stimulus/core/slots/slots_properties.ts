@@ -1,6 +1,6 @@
-import { Controller } from "./controller";
-import { Constructor } from "./constructor";
-import { readInheritableStaticArrayValues } from "./inheritable_statics";
+import { Controller } from "../controller";
+import { Constructor } from "../constructor";
+import { readInheritableStaticArrayValues } from "../inheritable_statics";
 
 export function SlotPropertiesBlessing<T>(constructor: Constructor<T>) {
   const slots = readInheritableStaticArrayValues(constructor, "slots");
@@ -16,7 +16,12 @@ function propertiesForSlotDefinition(name: string) {
   return {
     [name]: {
       get(this: Controller) {
-        const target = this.slots.has(name);
+        const target = Array.from(this.slots.values()).find((slot) => {
+          if (slot.name == name) {
+            return true;
+          }
+        });
+        // const target = "TODO: 关联slot与上下文";
         if (target) {
           return target;
         } else {

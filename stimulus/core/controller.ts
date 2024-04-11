@@ -3,7 +3,7 @@ import { ClassPropertiesBlessing } from "./class_properties";
 import { Constructor } from "./constructor";
 import { Context } from "./context";
 import { OutletPropertiesBlessing } from "./outlet_properties";
-import { SlotPropertiesBlessing } from "./slots_properties";
+import { SlotPropertiesBlessing } from "./slots/slots_properties";
 import { TargetPropertiesBlessing } from "./target_properties";
 import {
   ValuePropertiesBlessing,

@@ -46,6 +46,8 @@ export class Context
     this.valueObserver.start();
     this.targetObserver.start();
     this.outletObserver.start();
+    //处理子节点
+    this.handleChildrenNodes();
 
     try {
       this.controller.connect();
@@ -53,19 +55,45 @@ export class Context
     } catch (error: any) {
       this.handleError(error, "connecting controller");
     }
-
-    //处理子节点
-    this.handleChildrenNodes();
   }
 
   refresh() {
     this.outletObserver.refresh();
   }
 
-  handleChildrenNodes() {
+  //缓存子节点
+
+  cacheChildrenNode() {
     Array.from(this.element.children).forEach((dom) => {
       this.childrenNodes.set(dom, dom.attributes);
     });
+  }
+
+  handleChildrenNodes() {
+    this.cacheChildrenNode();
+
+    const findSlotNodeInChildren = () => {
+      let childrenMap = this.childrenNodes;
+
+      let values = childrenMap.entries();
+
+      for (const [dom, value] of values) {
+        const slotName = value.getNamedItem("slot")?.nodeValue;
+        if (!slotName) {
+          continue;
+        }
+        //匹配到slot
+
+        this.scope.slots.add({
+          element: dom,
+          controller: this.controller,
+          name: slotName,
+        });
+      }
+    };
+
+    //找到当前子节点中作为插槽的部分
+    findSlotNodeInChildren();
   }
   disconnect() {
     try {
