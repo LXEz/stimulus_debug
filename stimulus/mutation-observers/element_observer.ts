@@ -17,7 +17,7 @@ export class ElementObserver {
   private mutationObserverInit: MutationObserverInit = {
     attributes: true,
     childList: true,
-    subtree: false,
+    subtree: true,
   };
 
   constructor(element: Element, delegate: ElementObserverDelegate) {
