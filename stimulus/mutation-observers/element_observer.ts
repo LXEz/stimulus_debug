@@ -1,72 +1,78 @@
 export interface ElementObserverDelegate {
-  matchElement(element: Element): boolean
-  matchElementsInTree(tree: Element): Element[]
+  matchElement(element: Element): boolean;
+  matchElementsInTree(tree: Element): Element[];
 
-  elementMatched?(element: Element): void
-  elementUnmatched?(element: Element): void
-  elementAttributeChanged?(element: Element, attributeName: string): void
+  elementMatched?(element: Element): void;
+  elementUnmatched?(element: Element): void;
+  elementAttributeChanged?(element: Element, attributeName: string): void;
 }
 
 export class ElementObserver {
-  element: Element
-  started: boolean
-  private delegate: ElementObserverDelegate
+  element: Element;
+  started: boolean;
+  private delegate: ElementObserverDelegate;
 
-  private elements: Set<Element>
-  private mutationObserver: MutationObserver
-  private mutationObserverInit: MutationObserverInit = { attributes: true, childList: true, subtree: true }
+  private elements: Set<Element>;
+  private mutationObserver: MutationObserver;
+  private mutationObserverInit: MutationObserverInit = {
+    attributes: true,
+    childList: true,
+    subtree: false,
+  };
 
   constructor(element: Element, delegate: ElementObserverDelegate) {
-    this.element = element
-    this.started = false
-    this.delegate = delegate
+    this.element = element;
+    this.started = false;
+    this.delegate = delegate;
 
-    this.elements = new Set()
-    this.mutationObserver = new MutationObserver((mutations) => this.processMutations(mutations))
+    this.elements = new Set();
+    this.mutationObserver = new MutationObserver((mutations) =>
+      this.processMutations(mutations)
+    );
   }
 
   start() {
     if (!this.started) {
-      this.started = true
-      this.mutationObserver.observe(this.element, this.mutationObserverInit)
-      this.refresh()
+      this.started = true;
+      this.mutationObserver.observe(this.element, this.mutationObserverInit);
+      this.refresh();
     }
   }
 
   pause(callback: () => void) {
     if (this.started) {
-      this.mutationObserver.disconnect()
-      this.started = false
+      this.mutationObserver.disconnect();
+      this.started = false;
     }
 
-    callback()
+    callback();
 
     if (!this.started) {
-      this.mutationObserver.observe(this.element, this.mutationObserverInit)
-      this.started = true
+      this.mutationObserver.observe(this.element, this.mutationObserverInit);
+      this.started = true;
     }
   }
 
   stop() {
     if (this.started) {
-      this.mutationObserver.takeRecords()
-      this.mutationObserver.disconnect()
-      this.started = false
+      this.mutationObserver.takeRecords();
+      this.mutationObserver.disconnect();
+      this.started = false;
     }
   }
 
   refresh() {
     if (this.started) {
-      const matches = new Set(this.matchElementsInTree())
+      const matches = new Set(this.matchElementsInTree());
 
       for (const element of Array.from(this.elements)) {
         if (!matches.has(element)) {
-          this.removeElement(element)
+          this.removeElement(element);
         }
       }
 
       for (const element of Array.from(matches)) {
-        this.addElement(element)
+        this.addElement(element);
       }
     }
   }
@@ -76,46 +82,49 @@ export class ElementObserver {
   private processMutations(mutations: MutationRecord[]) {
     if (this.started) {
       for (const mutation of mutations) {
-        this.processMutation(mutation)
+        this.processMutation(mutation);
       }
     }
   }
 
   private processMutation(mutation: MutationRecord) {
     if (mutation.type == "attributes") {
-      this.processAttributeChange(mutation.target as Element, mutation.attributeName!)
+      this.processAttributeChange(
+        mutation.target as Element,
+        mutation.attributeName!
+      );
     } else if (mutation.type == "childList") {
-      this.processRemovedNodes(mutation.removedNodes)
-      this.processAddedNodes(mutation.addedNodes)
+      this.processRemovedNodes(mutation.removedNodes);
+      this.processAddedNodes(mutation.addedNodes);
     }
   }
 
   private processAttributeChange(element: Element, attributeName: string) {
     if (this.elements.has(element)) {
       if (this.delegate.elementAttributeChanged && this.matchElement(element)) {
-        this.delegate.elementAttributeChanged(element, attributeName)
+        this.delegate.elementAttributeChanged(element, attributeName);
       } else {
-        this.removeElement(element)
+        this.removeElement(element);
       }
     } else if (this.matchElement(element)) {
-      this.addElement(element)
+      this.addElement(element);
     }
   }
 
   private processRemovedNodes(nodes: NodeList) {
     for (const node of Array.from(nodes)) {
-      const element = this.elementFromNode(node)
+      const element = this.elementFromNode(node);
       if (element) {
-        this.processTree(element, this.removeElement)
+        this.processTree(element, this.removeElement);
       }
     }
   }
 
   private processAddedNodes(nodes: NodeList) {
     for (const node of Array.from(nodes)) {
-      const element = this.elementFromNode(node)
+      const element = this.elementFromNode(node);
       if (element && this.elementIsActive(element)) {
-        this.processTree(element, this.addElement)
+        this.processTree(element, this.addElement);
       }
     }
   }
@@ -123,30 +132,30 @@ export class ElementObserver {
   // Element matching
 
   private matchElement(element: Element): boolean {
-    return this.delegate.matchElement(element)
+    return this.delegate.matchElement(element);
   }
 
   private matchElementsInTree(tree: Element = this.element): Element[] {
-    return this.delegate.matchElementsInTree(tree)
+    return this.delegate.matchElementsInTree(tree);
   }
 
   private processTree(tree: Element, processor: (element: Element) => void) {
     for (const element of this.matchElementsInTree(tree)) {
-      processor.call(this, element)
+      processor.call(this, element);
     }
   }
 
   private elementFromNode(node: Node): Element | undefined {
     if (node.nodeType == Node.ELEMENT_NODE) {
-      return node as Element
+      return node as Element;
     }
   }
 
   private elementIsActive(element: Element): boolean {
     if (element.isConnected != this.element.isConnected) {
-      return false
+      return false;
     } else {
-      return this.element.contains(element)
+      return this.element.contains(element);
     }
   }
 
@@ -155,9 +164,9 @@ export class ElementObserver {
   private addElement(element: Element) {
     if (!this.elements.has(element)) {
       if (this.elementIsActive(element)) {
-        this.elements.add(element)
+        this.elements.add(element);
         if (this.delegate.elementMatched) {
-          this.delegate.elementMatched(element)
+          this.delegate.elementMatched(element);
         }
       }
     }
@@ -165,9 +174,9 @@ export class ElementObserver {
 
   private removeElement(element: Element) {
     if (this.elements.has(element)) {
-      this.elements.delete(element)
+      this.elements.delete(element);
       if (this.delegate.elementUnmatched) {
-        this.delegate.elementUnmatched(element)
+        this.delegate.elementUnmatched(element);
       }
     }
   }

@@ -3,6 +3,7 @@ import { ClassPropertiesBlessing } from "./class_properties";
 import { Constructor } from "./constructor";
 import { Context } from "./context";
 import { OutletPropertiesBlessing } from "./outlet_properties";
+import { SlotPropertiesBlessing } from "./slots_properties";
 import { TargetPropertiesBlessing } from "./target_properties";
 import {
   ValuePropertiesBlessing,
@@ -21,6 +22,7 @@ type DispatchOptions = Partial<{
 
 export class Controller<ElementType extends Element = Element> {
   static blessings = [
+    SlotPropertiesBlessing,
     ClassPropertiesBlessing,
     TargetPropertiesBlessing,
     ValuePropertiesBlessing,
@@ -64,6 +66,10 @@ export class Controller<ElementType extends Element = Element> {
 
   get targets() {
     return this.scope.targets;
+  }
+
+  get slots() {
+    return this.scope.slots;
   }
 
   get outlets() {
