@@ -17,7 +17,12 @@ export class Demo extends Controller {
 
   static slots: string[] = ["slot1", "slot2"];
   connect(): void {
-    console.log(this.slot1);
+    console.log(this.defaultSlots);
+    this.handleDefaultSlots();
+  }
+
+  handleDefaultSlots() {
+    this.element.appendChild(this.defaultSlots.element[1]);
   }
   clickHandle() {
     console.log(111);

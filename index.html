@@ -8,8 +8,8 @@
   </head>
   <body>
     <div id="app" data-controller="demo">
-      <div slot="slot1">
-        <div data-controller="son1"></div>
+      <div id="slot1" slot="slot1">
+        <div id="son1-controller" data-controller="son1"></div>
       </div>
       <div id="father" data-controller="father">
         <div id="test-1" slot="slot1">
@@ -19,6 +19,7 @@
           <div id="li-2" data-controller="son2"></div>
         </div>
       </div>
+      <span>我是span</span>
 
       <div id="w-1" data-controller="son2"></div>
       <div id="w-2" data-controller="son2"></div>

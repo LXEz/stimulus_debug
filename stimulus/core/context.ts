@@ -10,6 +10,7 @@ import { ValueObserver } from "./value_observer";
 import { TargetObserver, TargetObserverDelegate } from "./target_observer";
 import { OutletObserver, OutletObserverDelegate } from "./outlet_observer";
 import { namespaceCamelize } from "./string_helpers";
+import { DEFAULT_SLOTS_NAME } from "./slots/slot";
 
 export class Context
   implements ErrorHandler, TargetObserverDelegate, OutletObserverDelegate
@@ -65,33 +66,57 @@ export class Context
 
   cacheChildrenNode() {
     Array.from(this.element.children).forEach((dom) => {
-      this.childrenNodes.set(dom, dom.attributes);
+      this.childrenNodes.set(dom, (dom as Element).attributes);
     });
+  }
+
+  removeChildFromDom(dom: Element) {
+    const parent = dom.parentElement;
+    parent?.removeChild(dom);
   }
 
   handleChildrenNodes() {
     this.cacheChildrenNode();
 
+    const childrenList = Array.from(this.childrenNodes);
+
+    const handleDefaultSlots = () => {
+      //过滤出default-slot
+      const defaultSlots = childrenList.filter(([dom, value]) => {
+        const isDefault = !value.getNamedItem("slot")?.nodeValue;
+
+        if (isDefault) {
+          this.removeChildFromDom(dom);
+        }
+
+        return isDefault;
+      });
+
+      this.scope.slots.add({
+        element: defaultSlots.map(([dom]) => dom),
+        name: DEFAULT_SLOTS_NAME,
+        controller: this.controller,
+      });
+    };
     const findSlotNodeInChildren = () => {
-      let childrenMap = this.childrenNodes;
-
-      let values = childrenMap.entries();
-
-      for (const [dom, value] of values) {
+      for (const [dom, value] of childrenList) {
         const slotName = value.getNamedItem("slot")?.nodeValue;
         if (!slotName) {
           continue;
         }
         //匹配到slot
 
+        this.removeChildFromDom(dom);
+
         this.scope.slots.add({
-          element: dom,
+          element: Array.from(dom.children),
           controller: this.controller,
           name: slotName,
         });
       }
     };
 
+    handleDefaultSlots();
     //找到当前子节点中作为插槽的部分
     findSlotNodeInChildren();
   }
