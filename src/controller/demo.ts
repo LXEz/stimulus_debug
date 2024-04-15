@@ -22,7 +22,10 @@ export class Demo extends Controller {
   }
 
   handleDefaultSlots() {
-    this.element.appendChild(this.defaultSlots.element[1]);
+    this.element.innerHTML = this.defaultSlots.element.reduce(
+      (pre: string, cur: string) => pre + cur,
+      ""
+    );
   }
   clickHandle() {
     console.log(111);

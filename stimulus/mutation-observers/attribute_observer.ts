@@ -1,3 +1,4 @@
+import { attribute_match_strate } from "../attribute-match/attribute_match.strate";
 import { ElementObserver, ElementObserverDelegate } from "./element_observer";
 
 export interface AttributeObserverDelegate {
@@ -58,11 +59,7 @@ export class AttributeObserver implements ElementObserverDelegate {
   }
 
   matchElementsInTree(tree: Element): Element[] {
-    const match = this.matchElement(tree) ? [tree] : [];
-    const matches = Array.from(tree.querySelectorAll(this.selector));
-    const matchDa = tree.querySelector(this.selector) ?? [];
-    // return match.concat(matches);
-    return [matchDa as Element];
+    return attribute_match_strate(tree, this);
   }
 
   elementMatched(element: Element) {

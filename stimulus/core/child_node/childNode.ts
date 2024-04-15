@@ -12,14 +12,14 @@ export function handleChildrenNodes(context: Context) {
       const isDefault = !value.getNamedItem("slot")?.nodeValue;
 
       if (isDefault) {
-        context.removeChildFromDom(dom);
+        removeChildFromDom(dom);
       }
 
       return isDefault;
     });
 
     context.scope.slots.add({
-      element: defaultSlots.map(([dom]) => dom),
+      element: defaultSlots.map(([dom]) => dom.outerHTML),
       name: DEFAULT_SLOTS_NAME,
       controller: context.controller,
     });
@@ -32,10 +32,10 @@ export function handleChildrenNodes(context: Context) {
       }
       //匹配到slot
 
-      context.removeChildFromDom(dom);
+      removeChildFromDom(dom);
 
       context.scope.slots.add({
-        element: Array.from(dom.children),
+        element: Array.from(dom.children).map((dom) => dom.outerHTML),
         controller: context.controller,
         name: slotName,
       });
@@ -51,4 +51,9 @@ function cacheChildrenNode(context: Context) {
   Array.from(context.element.children).forEach((dom) => {
     context.childrenNodes.set(dom, (dom as Element).attributes);
   });
+}
+
+function removeChildFromDom(dom: Element) {
+  const parent = dom.parentElement;
+  parent?.removeChild(dom);
 }

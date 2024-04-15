@@ -2,7 +2,7 @@ import { Controller } from "..";
 
 export interface Slot {
   name: String;
-  element: Element[];
+  element: string[];
   controller: Controller;
 }
 

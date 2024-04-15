@@ -62,11 +62,6 @@ export class Context
     this.outletObserver.refresh();
   }
 
-  removeChildFromDom(dom: Element) {
-    const parent = dom.parentElement;
-    parent?.removeChild(dom);
-  }
-
   disconnect() {
     try {
       this.controller.disconnect();
