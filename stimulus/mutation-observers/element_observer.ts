@@ -1,3 +1,5 @@
+import { AddOrRemove, getProcess } from "../process-state/process_state";
+
 export interface ElementObserverDelegate {
   matchElement(element: Element): boolean;
   matchElementsInTree(tree: Element): Element[];
@@ -26,9 +28,12 @@ export class ElementObserver {
     this.delegate = delegate;
 
     this.elements = new Set();
-    this.mutationObserver = new MutationObserver((mutations) =>
-      this.processMutations(mutations)
-    );
+    this.mutationObserver = new MutationObserver((mutations) => {
+      const processState = getProcess();
+      processState.isMutation = true;
+      this.processMutations(mutations);
+      processState.isMutation = false;
+    });
   }
 
   start() {
@@ -164,20 +169,33 @@ export class ElementObserver {
   private addElement(element: Element) {
     if (!this.elements.has(element)) {
       if (this.elementIsActive(element)) {
+        const processState = getProcess();
+        processState.currentDom = element;
+        processState.removeOrAdd = AddOrRemove.ADD;
         this.elements.add(element);
         if (this.delegate.elementMatched) {
           this.delegate.elementMatched(element);
         }
+
+        processState.currentDom = null;
+        processState.removeOrAdd = AddOrRemove.NULL;
       }
     }
   }
 
   private removeElement(element: Element) {
     if (this.elements.has(element)) {
+      const processState = getProcess();
+      processState.currentDom = element;
+      processState.removeOrAdd = AddOrRemove.REMOVE;
       this.elements.delete(element);
+
       if (this.delegate.elementUnmatched) {
         this.delegate.elementUnmatched(element);
       }
+
+      processState.currentDom = null;
+      processState.removeOrAdd = AddOrRemove.NULL;
     }
   }
 }

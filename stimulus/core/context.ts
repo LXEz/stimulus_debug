@@ -11,6 +11,7 @@ import { TargetObserver, TargetObserverDelegate } from "./target_observer";
 import { OutletObserver, OutletObserverDelegate } from "./outlet_observer";
 import { namespaceCamelize } from "./string_helpers";
 import { handleChildrenNodes } from "./child_node/childNode";
+import { ObserverHandle, getProcess } from "../process-state/process_state";
 
 export class Context
   implements ErrorHandler, TargetObserverDelegate, OutletObserverDelegate
@@ -43,10 +44,23 @@ export class Context
   }
 
   connect() {
+    const processState = getProcess();
+    processState.currentContext = this;
+    processState.currentControllerDom = this.element;
+
+    processState.observerHandle = ObserverHandle.HANDLE_ACTION;
     this.bindingObserver.start();
+
+    processState.observerHandle = ObserverHandle.HANDLE_VALUE;
     this.valueObserver.start();
+
+    processState.observerHandle = ObserverHandle.HANDLE_TARGET;
     this.targetObserver.start();
+
+    processState.observerHandle = ObserverHandle.HANDLE_OUTLET;
     this.outletObserver.start();
+
+    processState.observerHandle = ObserverHandle.NULL;
     //处理子节点
     handleChildrenNodes(this);
 
@@ -55,6 +69,9 @@ export class Context
       this.logDebugActivity("connect");
     } catch (error: any) {
       this.handleError(error, "connecting controller");
+    } finally {
+      getProcess().currentContext = null;
+      processState.currentControllerDom = null;
     }
   }
 
