@@ -48,6 +48,9 @@ export class Context
     processState.currentContext = this;
     processState.currentControllerDom = this.element;
 
+    //处理子节点
+    handleChildrenNodes(this);
+
     processState.observerHandle = ObserverHandle.HANDLE_ACTION;
     this.bindingObserver.start();
 
@@ -61,8 +64,6 @@ export class Context
     this.outletObserver.start();
 
     processState.observerHandle = ObserverHandle.NULL;
-    //处理子节点
-    handleChildrenNodes(this);
 
     try {
       this.controller.connect();

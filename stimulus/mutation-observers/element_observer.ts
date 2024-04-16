@@ -1,6 +1,14 @@
-import { AddOrRemove, getProcess } from "../process-state/process_state";
+import {
+  AddOrRemove,
+  MutationObserverType,
+  getProcess,
+  updateMutationObserverContextType,
+  updateMutations,
+  updateProcessByElementObserver,
+} from "../process-state/process_state";
 
 export interface ElementObserverDelegate {
+  attributeName: string;
   matchElement(element: Element): boolean;
   matchElementsInTree(tree: Element): Element[];
 
@@ -12,7 +20,7 @@ export interface ElementObserverDelegate {
 export class ElementObserver {
   element: Element;
   started: boolean;
-  private delegate: ElementObserverDelegate;
+  delegate: ElementObserverDelegate;
 
   private elements: Set<Element>;
   private mutationObserver: MutationObserver;
@@ -31,7 +39,12 @@ export class ElementObserver {
     this.mutationObserver = new MutationObserver((mutations) => {
       const processState = getProcess();
       processState.isMutation = true;
+      updateProcessByElementObserver(this);
+
+      updateMutations(mutations);
+
       this.processMutations(mutations);
+      processState.mutationObserverContext = null;
       processState.isMutation = false;
     });
   }
@@ -99,14 +112,22 @@ export class ElementObserver {
         mutation.attributeName!
       );
     } else if (mutation.type == "childList") {
+      updateMutationObserverContextType(MutationObserverType.CHILD_LIST_REMOVE);
       this.processRemovedNodes(mutation.removedNodes);
+
+      updateMutationObserverContextType(MutationObserverType.CHILD_LIST_ADD);
       this.processAddedNodes(mutation.addedNodes);
     }
+
+    updateMutationObserverContextType(MutationObserverType.NULL);
   }
 
   private processAttributeChange(element: Element, attributeName: string) {
     if (this.elements.has(element)) {
       if (this.delegate.elementAttributeChanged && this.matchElement(element)) {
+        updateMutationObserverContextType(
+          MutationObserverType.ATTRIBUTE_CHANGE
+        );
         this.delegate.elementAttributeChanged(element, attributeName);
       } else {
         this.removeElement(element);

@@ -17,38 +17,37 @@ export class Demo extends Controller {
 
   static slots: string[] = ["slot1", "slot2"];
   connect(): void {
-    console.log(this.defaultSlots);
     this.render();
-    // this.element.innerHTML = `
-
-    // <div >我是demo组件---${this.defaultSlots.element}</div>
-
-    // `;
-
-    // this.element.innerHTML = this.defaultSlots.element;
   }
 
   render() {
-    const container = (defaultSlots: string) => `
+    const container = (defaultSlots: string, slot1: String) => `
   
-        <div class="bg-orange-400 w-full">我是demo组件---${defaultSlots}</div>
-        
+      <div class="bg-orange-500 w-full h-[500px]">
+      
+        <div id="demo:title">
+          <div  class="flex justify-center border-b-[1px] ">我是demo组件</div>
+        </div>
+        <div id="demo:body" class="flex mt-[10px]">
+            <div id="demo:slot1" class="w-[50%] border mt-[10px] h-[300px] bg-orange-400">
+                <div  class="flex justify-center border-b-[1px] ">#slot1</div>
+
+                <div id="" class="flex items-center justify-center mt-[30px]"> ${slot1}</div>
+            </div>
+            <div id="demo:defaultSlot" class="w-[50%] border mt-[10px] h-[300px] bg-orange-400">
+                <div  class="flex justify-center border-b-[1px] ">#defaultSlot</div>
+
+                <div id="" class="flex items-center justify-center mt-[30px]"> ${defaultSlots}</div>
+            
+            </div>
+        </div>
+      </div>
+      
         `;
 
-    this.element.innerHTML = container(this.defaultSlots.element);
-  }
-  handleDefaultSlots() {
-    this.element.innerHTML = this.defaultSlots.element.reduce(
-      (pre: string, cur: string) => pre + cur,
-      ""
+    this.element.innerHTML = container(
+      this.defaultSlots.element,
+      this.slot1.element
     );
-  }
-  clickHandle() {
-    console.log(111);
-    this.dispatch("putDataToMenu", { detail: { id: 1231 } });
-  }
-
-  getHeaderData() {
-    console.log("getHeaderData");
   }
 }

@@ -1,0 +1,3 @@
+首先observe html 属性-data-controller 得到第一个controller dom #CD 给CD绑定 3个
+observe 属性- data-action ; data-[controller]-target;
+data-data-[controller]-outlet
