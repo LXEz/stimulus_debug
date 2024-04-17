@@ -18,9 +18,20 @@ export class FatherComponent extends Controller {
   render() {
     const container = (slot1: string, slot2: string) => `
     <div id="fContainer" class="mb-[10px] bg-orange-200 border">
+        <div  class="flex w-f justify-center border-b-[1px] m-3">我是father组件</div>
+        <div id="fa:body" class="flex">
+            <div id="fa:slot1" class="mx-3 bg-orange-300 p-2">
+              <div class="border-b-[1px] mb-4 ">#slot1</div>
+
+              <div>${slot1} </div>             
+            </div>
+            <div id="fa:slot2" class="mx-3 bg-orange-300 p-2">
+              <div class="border-b-[1px] mb-4 " >#slot2</div>
+              <div> ${slot2}</div>
+            </div>
+        </div>  
+      </div>
   
-        <div >我是嵌套在父组件中的：---${slot1}</div>
-        <div >我是嵌套在父组件中的：---${slot2}</div>
     </div>`;
 
     this.element.innerHTML = container(this.slot1.element, this.slot2.element);

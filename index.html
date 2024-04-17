@@ -9,25 +9,15 @@
   </head>
   <body>
     <div id="app" data-controller="demo">
-      <div>
-        <div
-          id="father"
-          data-controller="father"
-          data-action="click->father#tt"
-        >
-          <div id="test-1" slot="slot1">
-            <div id="li-1" data-controller="son1"></div>
-          </div>
-          <div id="test-2" slot="slot2">
-            <div id="li-2" data-controller="son2"></div>
-          </div>
+      <div id="father" data-controller="father" data-action="click->father#tt">
+        <div id="test-1" slot="slot1">
+          <div id="li-1" data-controller="son1"></div>
         </div>
-        <span>我是span</span>
-
-        <div id="w-1" data-controller="son2"></div>
-        <div id="w-2" data-controller="son2"></div>
-        <div id="w-3" data-controller="son1"></div>
+        <div id="test-2" slot="slot2">
+          <div id="li-2" data-controller="son2"></div>
+        </div>
       </div>
+      <span>我是span</span>
 
       <div id="slot1" slot="slot1">
         <div id="son1-controller" data-controller="son1" p@icon=""></div>
